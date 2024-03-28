@@ -67,17 +67,17 @@ const CreateItemModal = () => {
           </View>
           <View className="flex-1">
             <AppButton
+              loading={loading}
+              setLoading={setLoading}
               variant={name && price && !loading ? "primary" : "disabled"}
               text={loading ? "Creating..." : "Create"}
               onPress={async () => {
-                setLoading(true);
                 const doc = await addItem({
                   name,
                   price: parseFloat(price),
                   emoji,
                   shopId: shop?.id!,
                 });
-                console.log(doc.id);
                 setItems(
                   items!.concat([
                     {
@@ -89,7 +89,6 @@ const CreateItemModal = () => {
                     },
                   ] as Item[])
                 );
-                setLoading(false);
                 router.back();
               }}
             />

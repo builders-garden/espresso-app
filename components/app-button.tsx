@@ -37,14 +37,16 @@ export default function AppButton({
         if (setLoading === undefined) {
           onPress();
         } else {
+          console.log("setting loading");
           setLoading(true);
           onPress();
           setLoading(false);
+          console.log("done setting loading");
         }
       }}
-      disabled={disabled}
+      disabled={disabled || loading}
       className={`${
-        variant === "ghost"
+        variant === "ghost" || loading
           ? "bg-primary/20 text-primary"
           : variant === "disabled"
             ? "bg-primary opacity-50"
