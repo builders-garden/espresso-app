@@ -1,54 +1,54 @@
-import {Text, TouchableOpacity, View} from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
 export default function AppButton({
   text,
   onPress,
   variant = "primary",
   disabled = false,
+  icon,
+  size = "medium",
 }: {
   text: string;
   onPress: () => void;
   variant?: "primary" | "ghost" | "disabled" | "secondary";
+  icon?: React.ReactNode;
   disabled?: boolean;
+  size?: "small" | "medium" | "large";
 }) {
-  if (variant === "ghost") {
-    return (
-      <TouchableOpacity
-        onPress={onPress}
-        disabled={disabled}
-        className="bg-[#0061FF]/20 rounded-xl flex items-center justify-center py-3"
-      >
-        <Text className="text-lg text-[#3F89FF] font-semibold">{text}</Text>
-      </TouchableOpacity>
-    );
-  }
+  const sizeClasses = {
+    small: "py-1 px-2",
+    medium: "py-3 px-4",
+    large: "py-5 px-6",
+  };
 
-  if (variant === "disabled") {
-    return (
-      <View className="bg-[#0061FF] border-2 opacity-50 border-[#0061FF] rounded-full flex items-center justify-center py-3">
-        <Text className="text-lg text-white font-semibold">{text}</Text>
-      </View>
-    );
-  }
-
-  if (variant === "secondary") {
-    return (
-      <TouchableOpacity
-        onPress={onPress}
-        disabled={disabled}
-        className="bg-white border-2 border-white rounded-xl flex items-center justify-center py-3 px-4"
-      >
-        <Text className="text-lg text-black font-semibold">{text}</Text>
-      </TouchableOpacity>
-    );
-  }
+  const textSizeClsses = {
+    small: "text-md",
+    medium: "text-xl",
+    large: "text-2xl",
+  };
 
   return (
     <TouchableOpacity
       onPress={onPress}
-      className="bg-[#0061FF] border-2 border-[#0061FF] rounded-xl flex items-center justify-center py-3"
+      disabled={disabled}
+      className={`${
+        variant === "ghost"
+          ? "bg-primary/20 text-primary"
+          : variant === "disabled"
+            ? "bg-primary opacity-50"
+            : variant === "secondary"
+              ? "bg-white border-2 border-primary"
+              : "bg-primary border-2 border-primary"
+      } ${sizeClasses[size]} rounded-lg flex items-center justify-center font-semibold`}
     >
-      <Text className="text-lg text-white font-semibold">{text}</Text>
+      <View className="flex flex-row justify-center items-center space-x-1">
+        {icon}
+        <Text
+          className={`${variant === "ghost" || variant === "secondary" ? "text-primary" : "text-white"} font-semibold ${textSizeClsses[size]}`}
+        >
+          {text}
+        </Text>
+      </View>
     </TouchableOpacity>
   );
 }
