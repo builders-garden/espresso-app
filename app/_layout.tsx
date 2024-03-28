@@ -34,10 +34,10 @@ const toastConfig: ToastConfig = {
       {...props}
       style={{
         borderLeftColor: "green",
-        backgroundColor: "#21202E",
+        backgroundColor: "white",
       }}
-      text1Style={{ color: "white", fontWeight: "bold", fontSize: 16 }}
-      text2Style={{ color: "white" }}
+      text1Style={{ color: "black", fontWeight: "bold", fontSize: 16 }}
+      text2Style={{ color: "black" }}
     />
   ),
   info: (props) => (

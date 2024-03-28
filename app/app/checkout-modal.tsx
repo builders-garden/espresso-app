@@ -5,19 +5,13 @@ import QuantityComponent from "../../components/quantity-component";
 import AppButton from "../../components/app-button";
 import { router } from "expo-router";
 import { CheckoutItems, Item } from "../../lib/firestore/interfaces";
+import { useItemsStore } from "../../store/items-store";
+import { addCheckout } from "../../lib/firestore";
+import { useShopStore } from "../../store/shop-store";
 
 const CheckoutModal = () => {
-  const [items, setItems] = useState<Item[]>([
-    { id: "1", name: "Coffee", price: 2.5, emoji: "☕️" },
-    { id: "2", name: "Tea", price: 2, emoji: "🍵" },
-    { id: "3", name: "Cake", price: 3, emoji: "🍰" },
-    {
-      id: "4",
-      name: "Sandwich",
-      price: 4,
-      emoji: "🥪",
-    },
-  ]);
+  const shop = useShopStore((set) => set.shop);
+  const items = useItemsStore((state) => state.items);
   const [checkOutItems, setCheckOutItems] = useState<CheckoutItems[]>([]);
   const addItem = (item: Item) => {
     // if an item is already in the checkout list, update just the quantity
@@ -58,11 +52,14 @@ const CheckoutModal = () => {
         </View>
         <View className="flex flex-row flex-1">
           <View className="flex-1 flex flex-row flex-wrap">
-            {items.map((item, index) => (
+            {items!.map((item, index) => (
               <>
                 <Pressable
-                  onPress={() => addItem(item)}
-                  key={"itemp-" + item.id}
+                  onPress={() => {
+                    console.log(item);
+                    addItem(item);
+                  }}
+                  key={"itemp-" + item.name.toLocaleLowerCase()}
                   className="flex-1 rounded-lg flex flex-col text-center justify-between p-4 space-y-2"
                 >
                   <View className="rounded-lg flex flex-col text-center justify-between p-4 space-y-2 border border-mutedGrey">
@@ -130,12 +127,20 @@ const CheckoutModal = () => {
                     }
                     icon={<QrCode color={"white"} size={16} />}
                     text="Generate QRCode"
-                    onPress={() =>
+                    onPress={async () => {
+                      const checkout = await addCheckout({
+                        shopId: shop!.id,
+                        items: checkOutItems,
+                        createdAt: new Date(),
+                      });
                       router.push({
                         pathname: "/app/qrcode-modal",
-                        params: { items: JSON.stringify(checkOutItems) },
-                      })
-                    }
+                        params: {
+                          items: JSON.stringify(checkOutItems),
+                          checkoutId: checkout.id,
+                        },
+                      });
+                    }}
                   />
                 </View>
               </View>

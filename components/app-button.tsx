@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 
 export default function AppButton({
   text,
@@ -7,6 +7,8 @@ export default function AppButton({
   disabled = false,
   icon,
   size = "medium",
+  loading = false,
+  setLoading,
 }: {
   text: string;
   onPress: () => void;
@@ -14,6 +16,8 @@ export default function AppButton({
   icon?: React.ReactNode;
   disabled?: boolean;
   size?: "small" | "medium" | "large";
+  loading?: boolean;
+  setLoading?: (loading: boolean) => void;
 }) {
   const sizeClasses = {
     small: "py-1 px-2",
@@ -29,7 +33,15 @@ export default function AppButton({
 
   return (
     <TouchableOpacity
-      onPress={onPress}
+      onPress={() => {
+        if (setLoading === undefined) {
+          onPress();
+        } else {
+          setLoading(true);
+          onPress();
+          setLoading(false);
+        }
+      }}
       disabled={disabled}
       className={`${
         variant === "ghost"
@@ -42,7 +54,17 @@ export default function AppButton({
       } ${sizeClasses[size]} rounded-lg flex items-center justify-center font-semibold`}
     >
       <View className="flex flex-row justify-center items-center space-x-1">
-        {icon}
+        {!loading && icon}
+        {loading && (
+          <ActivityIndicator
+            animating={true}
+            color={
+              variant === "ghost" || variant === "secondary"
+                ? "text-primary"
+                : "text-white"
+            }
+          />
+        )}
         <Text
           className={`${variant === "ghost" || variant === "secondary" ? "text-primary" : "text-white"} font-semibold ${textSizeClsses[size]}`}
         >

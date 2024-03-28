@@ -71,15 +71,17 @@ const CreateItemModal = () => {
               text={loading ? "Creating..." : "Create"}
               onPress={async () => {
                 setLoading(true);
-                await addItem(shop?.id!, {
+                const doc = await addItem({
                   name,
                   price: parseFloat(price),
                   emoji,
                   shopId: shop?.id!,
                 });
+                console.log(doc.id);
                 setItems(
                   items!.concat([
                     {
+                      id: doc.id,
                       name,
                       price: parseFloat(price),
                       emoji,

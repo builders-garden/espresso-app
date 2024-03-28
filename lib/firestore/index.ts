@@ -7,6 +7,7 @@ import {
   collection,
   query,
   where,
+  addDoc,
 } from "firebase/firestore";
 import { firebaseFirestore, firebaseAuth } from "../../firebaseConfig";
 import { Checkout, Item, Shop } from "./interfaces";
@@ -39,9 +40,9 @@ export const getItems = async (shopId: string) => {
   return items;
 };
 
-export const addItem = async (shopId: string, item: Omit<Item, "id">) => {
+export const addItem = async (item: Omit<Item, "id">) => {
   // add item to shop
-  await setDoc(doc(firebaseFirestore, "items", shopId), item);
+  return await addDoc(collection(firebaseFirestore, "items"), item);
 };
 
 export const removeItem = async (itemId: string) => {
@@ -54,15 +55,9 @@ export const getCheckout = async (checkoutId: string) => {
   return await getDoc(doc(firebaseFirestore, "checkouts", checkoutId));
 };
 
-export const addCheckout = async (
-  checkoutId: string,
-  checkout: Omit<Checkout, "">
-) => {
+export const addCheckout = async (checkout: Omit<Checkout, "id">) => {
   // add checkout to shop
-  return await setDoc(
-    doc(firebaseFirestore, "checkouts", checkoutId),
-    checkout
-  );
+  return await addDoc(collection(firebaseFirestore, "checkouts"), checkout);
 };
 
 export const removeCheckout = async (checkoutId: string) => {
