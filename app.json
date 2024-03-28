@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "@privy-io/expo-starter",
-    "slug": "privy-expo-starter",
+    "name": "Espresso",
+    "slug": "espresso",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "landscape",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "jsEngine": "hermes",
@@ -13,6 +13,14 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "plugins": [
+      [
+        "expo-font",
+        {
+          "fonts": ["./assets/fonts/Raleway-VariableFont.ttf"]
+        }
+      ]
+    ],
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "bundleIdentifier": "com.privy.expo",
