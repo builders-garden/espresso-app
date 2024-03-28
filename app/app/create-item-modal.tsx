@@ -5,10 +5,21 @@ import { useState } from "react";
 import AppButton from "../../components/app-button";
 import { X } from "lucide-react-native";
 import { router } from "expo-router";
+import { addItem } from "../../lib/firestore";
+import { useShopStore } from "../../store/shop-store";
+import EmojiGrid from "../../components/emojis-grid";
+import { FoodEmojis } from "../../lib/emojis";
+import { useItemsStore } from "../../store/items-store";
+import { Item } from "../../lib/firestore/interfaces";
 
 const CreateItemModal = () => {
+  const shop = useShopStore((state) => state.shop);
+  const items = useItemsStore((state) => state.items);
+  const setItems = useItemsStore((state) => state.setItems);
+  const [emoji, setEmoji] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [price, setPrice] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   return (
     <SafeAreaView className="p-8">
       <View className="flex flex-col justify-between h-full w-full">
@@ -17,7 +28,12 @@ const CreateItemModal = () => {
             <Text className="font-bold text-2xl">Create new item</Text>
             <X color={"black"} onPress={() => router.back()} />
           </View>
-          <View className="flex flex-col space-y-8">
+          <View className="flex flex-col space-y-4">
+            <EmojiGrid
+              emojis={FoodEmojis}
+              selected={emoji}
+              setSelected={setEmoji}
+            />
             <View>
               <InputField
                 label="Name"
@@ -45,17 +61,33 @@ const CreateItemModal = () => {
               variant="ghost"
               text="Cancel"
               onPress={() => {
-                console.log("Cancel item");
                 router.back();
               }}
             />
           </View>
           <View className="flex-1">
             <AppButton
-              variant={name && price ? "primary" : "disabled"}
-              text="Create"
-              onPress={() => {
-                console.log("Create item");
+              variant={name && price && !loading ? "primary" : "disabled"}
+              text={loading ? "Creating..." : "Create"}
+              onPress={async () => {
+                setLoading(true);
+                await addItem(shop?.id!, {
+                  name,
+                  price: parseFloat(price),
+                  emoji,
+                  shopId: shop?.id!,
+                });
+                setItems(
+                  items!.concat([
+                    {
+                      name,
+                      price: parseFloat(price),
+                      emoji,
+                      shopId: shop?.id!,
+                    },
+                  ] as Item[])
+                );
+                setLoading(false);
                 router.back();
               }}
             />

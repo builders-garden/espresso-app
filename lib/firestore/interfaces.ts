@@ -1,10 +1,3 @@
-export interface Item {
-  id: string;
-  name: string;
-  price: number;
-  emoji?: string;
-}
-
 export interface CheckoutItems {
   item: Item;
   quantity: number;
@@ -17,4 +10,19 @@ export interface Shop {
   city: string;
   country: string;
   address: string;
+}
+
+export interface Item {
+  id: string;
+  name: string;
+  price: number;
+  emoji: string;
+  shopId: string;
+}
+
+export interface Checkout {
+  id: string;
+  shopId: string;
+  items: CheckoutItems[];
+  createdAt: Date;
 }

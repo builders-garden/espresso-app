@@ -7,14 +7,12 @@ import {
   View,
 } from "react-native";
 import AppButton from "../components/app-button";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import LoginForm from "../components/login-form";
-import { isNotCreated, useEmbeddedWallet, usePrivy } from "@privy-io/expo";
-import { router } from "expo-router";
+import { usePrivy } from "@privy-io/expo";
 
 const Home = () => {
-  const { isReady, user } = usePrivy();
-  const wallet = useEmbeddedWallet();
+  const { isReady } = usePrivy();
   const [isLogin, setIsLogin] = useState(false);
 
   return (
@@ -34,27 +32,19 @@ const Home = () => {
             <AppButton
               text={"Start now"}
               onPress={() => {
-                if (user) {
-                  if (isNotCreated(wallet)) {
-                    router.push("/app/onboarding");
-                  } else {
-                    router.push("/app/home");
-                  }
-                } else {
-                  setIsLogin(true);
-                }
+                setIsLogin(true);
               }}
             />
           )}
           {isReady && isLogin && (
             <View className="flex flex-col space-y-4">
               <LoginForm />
-              <Text
+              {/*<Text
                 className="text-center font-semibold"
                 onPress={() => setIsLogin(false)}
               >
                 Back
-              </Text>
+          </Text>*/}
             </View>
           )}
         </KeyboardAvoidingView>

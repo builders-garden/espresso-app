@@ -1,11 +1,11 @@
 import { View, Text, Image, ActivityIndicator } from "react-native";
-import { CheckoutItems } from "./checkout-modal";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams } from "expo-router";
 import QRCode from "react-native-qrcode-svg";
 import { usePrivyWagmiProvider } from "@buildersgarden/privy-wagmi-provider";
 import AppButton from "../../components/app-button";
 import { router } from "expo-router";
+import { CheckoutItems } from "../../lib/firestore/interfaces";
 
 const QRCodeModal = () => {
   const { items } = useLocalSearchParams();

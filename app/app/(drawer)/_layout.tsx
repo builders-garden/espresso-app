@@ -3,6 +3,8 @@ import { DrawerToggleButton } from "@react-navigation/drawer";
 import { LogOut } from "lucide-react-native";
 import { usePrivy } from "@privy-io/expo";
 import { router } from "expo-router";
+import { signOut } from "firebase/auth";
+import { firebaseAuth } from "../../../firebaseConfig";
 
 export default function AppLayout() {
   const { logout } = usePrivy();
@@ -19,6 +21,7 @@ export default function AppLayout() {
               color={"#FF0000"}
               onPress={async () => {
                 await logout();
+                await signOut(firebaseAuth);
                 router.replace("/");
               }}
             />

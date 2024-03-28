@@ -1,23 +1,15 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, View } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { EditIcon, PlusIcon, TrashIcon } from "lucide-react-native";
 import AppButton from "../../../components/app-button";
 import { router } from "expo-router";
-import { Item } from "../../../lib/firestore/interfaces";
+import { useItemsStore } from "../../../store/items-store";
+import { removeItem } from "../../../lib/firestore";
 
 const Items = () => {
-  const [items, setItems] = useState<Item[]>([
-    { id: "1", name: "Coffee", price: 2.5 },
-    { id: "2", name: "Tea", price: 2 },
-    { id: "3", name: "Cake", price: 3 },
-    {
-      id: "4",
-      name: "Sandwich",
-      price: 4,
-    },
-  ]);
-
+  const items = useItemsStore((state) => state.items);
+  const setItems = useItemsStore((state) => state.setItems);
   return (
     <SafeAreaView>
       <View className="flex flex-col p-8 space-y-8">
@@ -38,23 +30,29 @@ const Items = () => {
             <View className="basis-1/3"></View>
             <View className="basis-1/3"></View>
           </View>
-          {items.map((item, index) => (
+          {items?.map((item, index) => (
             <View
-              key={"item-" + item.id}
+              key={"item-" + item.name.toLocaleLowerCase()}
               className={`flex flex-row space-x-8 justify-between p-2 rounded-lg ${index % 2 === 0 ? "bg-mutedGrey/10" : "bg-white"}`}
             >
               <View className="flex flex-row space-x-8">
-                <Text className="basis-1/3 text-lg">{item.name}</Text>
+                <View className="basis-1/3 flex flex-row space-x-2">
+                  <Text className="text-lg">{item.emoji}</Text>
+                  <Text className="text-lg">{item.name}</Text>
+                </View>
                 <Text className="basis-1/3 text-lg">
                   ${item.price.toFixed(2)}
                 </Text>
               </View>
               <View className="flex flex-row space-x-4">
                 <View>
-                  <EditIcon color={"blue"} />
-                </View>
-                <View>
-                  <TrashIcon color={"red"} />
+                  <TrashIcon
+                    color={"red"}
+                    onPress={() => {
+                      removeItem(item.id);
+                      setItems(items?.filter((i) => i?.id !== item?.id));
+                    }}
+                  />
                 </View>
               </View>
             </View>

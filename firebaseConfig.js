@@ -6,12 +6,12 @@ import { getFirestore } from "firebase/firestore";
 // Initialize Firebase
 const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
-  authDomain: "split3-7bb3c.firebaseapp.com",
-  databaseURL: "https://split3-7bb3c.firebaseio.com",
-  projectId: "split3-7bb3c",
-  storageBucket: "split3-7bb3c.appspot.com",
-  messagingSenderId: "sender-id",
-  appId: "1:375466015675:ios:2a4493441fbe800fce229e",
+  authDomain: "espresso-4efa0.firebaseapp.com",
+  databaseURL: "https://espresso-4efa0.firebaseio.com",
+  projectId: "espresso-4efa0",
+  storageBucket: "espresso-4efa0.appspot.com",
+  messagingSenderId: "1023619667111",
+  appId: "1:1023619667111:ios:f39b07b6f3c43883c3f782",
 };
 
 const app = initializeApp(firebaseConfig);

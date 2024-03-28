@@ -4,7 +4,7 @@ import {
   useLoginWithEmail,
 } from "@privy-io/expo";
 import { useState, useEffect } from "react";
-import { View, TextInput, Text } from "react-native";
+import { View, TextInput, Text, ActivityIndicator } from "react-native";
 import AppButton from "./app-button";
 import CodeInput from "./code-input";
 import { router } from "expo-router";
@@ -14,6 +14,12 @@ import { useRequestsStore } from "../store/requests-store";
 import * as SecureStore from "expo-secure-store";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { firebaseAuth } from "../firebaseConfig";
+import { getItems, getShop } from "../lib/firestore";
+import { useShopStore } from "../store/shop-store";
+import { useItemsStore } from "../store/items-store";
+import { Item } from "../lib/firestore/interfaces";
+import EmojiPicker, { emojiFromUtf16 } from "rn-emoji-picker";
+import { emojis } from "rn-emoji-picker/dist/data";
 
 enum LoginStatus {
   INITIAL = "initial",
@@ -26,6 +32,8 @@ enum LoginStatus {
 const LoginForm = () => {
   const [email, setEmail] = useState<string>("test@privy.io");
   const [code, setCode] = useState(Array(6).fill("0"));
+  const setShop = useShopStore((state) => state.setShop);
+  const setItems = useItemsStore((state) => state.setItems);
   const { address } = usePrivyWagmiProvider();
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
@@ -35,7 +43,9 @@ const LoginForm = () => {
   const wallet = useEmbeddedWallet();
   const { state, sendCode, loginWithCode } = useLoginWithEmail({
     onError: (error) => {
-      console.error(error);
+      if (error.message.includes("useLinkWith")) {
+        router.push("/app/home");
+      }
       const e = JSON.parse(error.message)[0];
       if (e.validation === "email") {
         setErrorMessage("Please enter a valid email address");
@@ -69,11 +79,9 @@ const LoginForm = () => {
   }, [state, address]);
 
   const handleConnection = async () => {
-    let isNewUser = false;
     if (isNotCreated(wallet)) {
       setLoadingMessage("Creating wallet...");
       await wallet.create!();
-      isNewUser = true;
     }
     setLoadingMessage("Connecting wallet...");
     const onboarding = await SecureStore.getItemAsync(`onboarding-${address}`);
@@ -81,13 +89,30 @@ const LoginForm = () => {
       return router.push("/onboarding");
     }
     const password = await SecureStore.getItemAsync(`password-${address}`);
-    const email = `${address}@ghost.app`;
+    const email = `${address}@espresso.app`;
     await signInWithEmailAndPassword(firebaseAuth, email, password!);
-    setLoadingMessage("Fetching user data...");
+    setLoadingMessage("Fetching shop data...");
     const provider = await wallet.getProvider!();
     const requests = await getRequests(provider, address!);
-    console.log("Requests", requests);
     setRequests(requests);
+    const shop = await getShop();
+    if (shop.exists()) {
+      const { id, name, city, country, address, walletAddress } = shop.data();
+      setShop({
+        id,
+        name,
+        city,
+        country,
+        address,
+        walletAddress,
+      });
+      const items = await getItems(id);
+      setItems(items as Item[]);
+      router.push("/app/home");
+    } else {
+      console.log("here");
+      router.push("/onboarding");
+    }
   };
 
   if (state.status === "initial" || status === LoginStatus.EMAIL_ERROR) {
@@ -133,6 +158,7 @@ const LoginForm = () => {
   return (
     <View className="flex flex-col space-y-8">
       <Text className="text-center">{loadingMessage}</Text>
+      <ActivityIndicator animating={true} color={"#0061FF"} />
     </View>
   );
 };
