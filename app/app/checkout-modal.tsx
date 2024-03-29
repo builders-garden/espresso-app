@@ -86,7 +86,7 @@ const CheckoutModal = () => {
                   >
                     <View className="flex-1 flex flex-row space-x-2 items-center">
                       <Text className="text-4xl">{item.item.emoji}</Text>
-                      <Text className="flex-1 text-xl font-semibold">
+                      <Text className="flex-1 text-2xl font-semibold">
                         {item.item.name}
                       </Text>
                     </View>

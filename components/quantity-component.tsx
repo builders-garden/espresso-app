@@ -1,12 +1,7 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
-import { Item } from "../app/app/(drawer)/items";
-import {
-  MinusCircleIcon,
-  MinusIcon,
-  PlusCircleIcon,
-  PlusIcon,
-} from "lucide-react-native";
+import { MinusCircleIcon, PlusCircleIcon } from "lucide-react-native";
+import { Item } from "../lib/firestore/interfaces";
 
 const QuantityComponent = ({
   item,
