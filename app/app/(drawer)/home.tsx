@@ -37,9 +37,6 @@ const Home = () => {
   // const requests = useRequestsStore((state) => state.requests);
   // const setRequests = useRequestsStore((state) => state.setRequests);
 
-  const wallet = useEmbeddedWallet();
-  const { address } = usePrivyWagmiProvider();
-
   useEffect(() => {
     let diffTime = 0;
     switch (selectedTab) {
@@ -56,13 +53,11 @@ const Home = () => {
     /*const filteredRequests = requests.filter(
       (r) => r.timestamp > Date.now() - 24 * 60 * 60 * 1000
     );*/
-    console.log((checkouts![0].createdAt as any)["seconds"]);
     const filteredCheckouts = checkouts?.filter(
       (c) =>
         (checkouts![0].createdAt as any)["seconds"] * 1000 >
         Date.now() - diffTime
     );
-    console.log(filteredCheckouts, checkouts);
     setRevenue(
       filteredCheckouts?.reduce(
         (acc, checkout) => acc + parseFloat(checkout.amount?.toString()!),
