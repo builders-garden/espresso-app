@@ -6,7 +6,6 @@ import { usePrivyWagmiProvider } from "@buildersgarden/privy-wagmi-provider";
 import AppButton from "../../components/app-button";
 import { router } from "expo-router";
 import { CheckoutItems } from "../../lib/firestore/interfaces";
-import { removeCheckout } from "../../lib/firestore";
 
 const QRCodeModal = () => {
   const { items, checkoutId } = useLocalSearchParams();
@@ -22,7 +21,10 @@ const QRCodeModal = () => {
           </View>
           <View className="items-center">
             {address ? (
-              <QRCode size={200} value={`https://example.com/${checkoutId}`} />
+              <QRCode
+                size={200}
+                value={`https://eca3-89-33-121-115.ngrok-free.app/checkouts/${checkoutId}`}
+              />
             ) : (
               <View className="flex flex-col space-y-8">
                 <ActivityIndicator animating={true} color={"#0061FF"} />
@@ -77,7 +79,6 @@ const QRCodeModal = () => {
             variant="ghost"
             text="Back to checkout"
             onPress={async () => {
-              await removeCheckout(checkoutId as string);
               router.back();
             }}
           />

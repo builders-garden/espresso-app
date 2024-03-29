@@ -13,6 +13,10 @@ import { useRequestsStore } from "../../../store/requests-store";
 import { useEmbeddedWallet } from "@privy-io/expo";
 import { getRequests } from "../../../lib/request-network";
 import { usePrivyWagmiProvider } from "@buildersgarden/privy-wagmi-provider";
+import { useShopStore } from "../../../store/shop-store";
+import { useCheckoutsStore } from "../../../store/checkouts-store";
+import { getCheckouts } from "../../../lib/firestore";
+import { Checkout } from "../../../lib/firestore/interfaces";
 
 export enum TabSelection {
   TODAY = "today",
@@ -25,10 +29,14 @@ const Home = () => {
   const [selectedTab, setSelectedTab] = useState<TabSelection>(
     TabSelection.TODAY
   );
+  const shop = useShopStore((state) => state.shop);
+  const checkouts = useCheckoutsStore((state) => state.checkouts);
+  const setCheckouts = useCheckoutsStore((state) => state.setCheckouts);
   const [revenue, setRevenue] = useState<number>(0);
   const [purchases, setPurchases] = useState<number>(0);
-  const requests = useRequestsStore((state) => state.requests);
-  const setRequests = useRequestsStore((state) => state.setRequests);
+  // const requests = useRequestsStore((state) => state.requests);
+  // const setRequests = useRequestsStore((state) => state.setRequests);
+
   const wallet = useEmbeddedWallet();
   const { address } = usePrivyWagmiProvider();
 
@@ -45,22 +53,35 @@ const Home = () => {
         diffTime = 30 * 24 * 60 * 60 * 1000;
         break;
     }
-    const filteredRequests = requests.filter(
+    /*const filteredRequests = requests.filter(
       (r) => r.timestamp > Date.now() - 24 * 60 * 60 * 1000
+    );*/
+    console.log((checkouts![0].createdAt as any)["seconds"]);
+    const filteredCheckouts = checkouts?.filter(
+      (c) =>
+        (checkouts![0].createdAt as any)["seconds"] * 1000 >
+        Date.now() - diffTime
     );
+    console.log(filteredCheckouts, checkouts);
     setRevenue(
-      filteredRequests.reduce(
-        (acc, request) => acc + parseFloat(request.expectedAmount.toString()),
+      filteredCheckouts?.reduce(
+        (acc, checkout) => acc + parseFloat(checkout.amount?.toString()!),
         0
-      )
+      )!
     );
-    setPurchases(filteredRequests.length);
+    setPurchases(filteredCheckouts?.length!);
   }, [selectedTab]);
 
-  const refetchRequests = async () => {
+  /*const refetchRequests = async () => {
     const provider = await wallet.getProvider!();
     const requests = await getRequests(provider, address!);
     setRequests(requests);
+    console.log(requests);
+  };*/
+
+  const refetchCheckouts = async () => {
+    const checkouts = await getCheckouts(shop!.id);
+    setCheckouts(checkouts.filter((c) => c.payerAddress) as Checkout[]);
   };
 
   return (
@@ -85,7 +106,7 @@ const Home = () => {
                 variant="secondary"
                 text="Refresh"
                 icon={<RefreshCwIcon size={16} />}
-                onPress={refetchRequests}
+                onPress={refetchCheckouts}
               />
             </View>
           </View>

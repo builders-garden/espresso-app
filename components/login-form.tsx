@@ -2,6 +2,7 @@ import {
   isNotCreated,
   useEmbeddedWallet,
   useLoginWithEmail,
+  usePrivy,
 } from "@privy-io/expo";
 import { useState, useEffect } from "react";
 import { View, TextInput, Text, ActivityIndicator } from "react-native";
@@ -14,12 +15,13 @@ import { useRequestsStore } from "../store/requests-store";
 import * as SecureStore from "expo-secure-store";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { firebaseAuth } from "../firebaseConfig";
-import { getItems, getShop } from "../lib/firestore";
+import { getCheckout, getCheckouts, getItems, getShop } from "../lib/firestore";
 import { useShopStore } from "../store/shop-store";
 import { useItemsStore } from "../store/items-store";
-import { Item } from "../lib/firestore/interfaces";
+import { Checkout, Item } from "../lib/firestore/interfaces";
 import EmojiPicker, { emojiFromUtf16 } from "rn-emoji-picker";
 import { emojis } from "rn-emoji-picker/dist/data";
+import { useCheckoutsStore } from "../store/checkouts-store";
 
 enum LoginStatus {
   INITIAL = "initial",
@@ -30,10 +32,12 @@ enum LoginStatus {
 }
 
 const LoginForm = () => {
+  const { logout } = usePrivy();
   const [email, setEmail] = useState<string>("test@privy.io");
   const [code, setCode] = useState(Array(6).fill("0"));
   const setShop = useShopStore((state) => state.setShop);
   const setItems = useItemsStore((state) => state.setItems);
+  const setCheckouts = useCheckoutsStore((state) => state.setCheckouts);
   const { address } = usePrivyWagmiProvider();
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
@@ -43,14 +47,13 @@ const LoginForm = () => {
   const wallet = useEmbeddedWallet();
   const { state, sendCode, loginWithCode } = useLoginWithEmail({
     onError: (error) => {
-      if (error.message.includes("useLinkWith")) {
-        router.push("/app/home");
-      }
-      const e = JSON.parse(error.message)[0];
-      if (e.validation === "email") {
-        setErrorMessage("Please enter a valid email address");
-        setStatus(LoginStatus.EMAIL_ERROR);
-      }
+      try {
+        const e = JSON.parse(error.message)[0];
+        if (e.validation === "email") {
+          setErrorMessage("Please enter a valid email address");
+          setStatus(LoginStatus.EMAIL_ERROR);
+        }
+      } catch (e) {}
     },
     onSendCodeSuccess(args) {
       setStatus(LoginStatus.SUCCESS_EMAIL);
@@ -73,6 +76,10 @@ const LoginForm = () => {
   }, [code]);
 
   useEffect(() => {
+    console.log(state.status);
+    if (state.status === "error") {
+      logout();
+    }
     if (state.status === "done" && address) {
       handleConnection();
     }
@@ -92,9 +99,9 @@ const LoginForm = () => {
     const email = `${address}@espresso.app`;
     await signInWithEmailAndPassword(firebaseAuth, email, password!);
     setLoadingMessage("Fetching shop data...");
-    const provider = await wallet.getProvider!();
-    const requests = await getRequests(provider, address!);
-    setRequests(requests);
+    // const provider = await wallet.getProvider!();
+    // const requests = await getRequests(provider, address!);
+    // setRequests(requests);
     const shop = await getShop();
     if (shop.exists()) {
       const { id, name, city, country, address, walletAddress } = shop.data();
@@ -106,8 +113,12 @@ const LoginForm = () => {
         address,
         walletAddress,
       });
-      const items = await getItems(id);
+      const [items, checkouts] = await Promise.all([
+        getItems(id),
+        getCheckouts(id),
+      ]);
       setItems(items as Item[]);
+      setCheckouts(checkouts.filter((c) => c.payerAddress));
       router.push("/app/home");
     } else {
       console.log("here");

@@ -8,6 +8,7 @@ import { CheckoutItems, Item } from "../../lib/firestore/interfaces";
 import { useItemsStore } from "../../store/items-store";
 import { addCheckout } from "../../lib/firestore";
 import { useShopStore } from "../../store/shop-store";
+import { ScrollView } from "react-native-gesture-handler";
 
 const CheckoutModal = () => {
   const shop = useShopStore((set) => set.shop);
@@ -48,7 +49,7 @@ const CheckoutModal = () => {
       <View className="p-8 flex flex-col h-full">
         <View className="flex flex-row justify-between">
           <Text className="font-bold text-2xl">Checkout</Text>
-          <X color={"black"} onPress={() => router.back()} />
+          <X color={"black"} className="p-4" onPress={() => router.back()} />
         </View>
         <View className="flex flex-row flex-1">
           <View className="flex-1 flex flex-row flex-wrap">
@@ -56,10 +57,9 @@ const CheckoutModal = () => {
               <>
                 <Pressable
                   onPress={() => {
-                    console.log(item);
                     addItem(item);
                   }}
-                  key={"itemp-" + item.name.toLocaleLowerCase()}
+                  key={"itemp-" + index + "-" + item.name.toLocaleLowerCase()}
                   className="flex-1 rounded-lg flex flex-col text-center justify-between p-4 space-y-2"
                 >
                   <View className="rounded-lg flex flex-col text-center justify-between p-4 space-y-2 border border-mutedGrey">
@@ -81,7 +81,7 @@ const CheckoutModal = () => {
               <View className="flex flex-col">
                 {checkOutItems.map((item, index) => (
                   <View
-                    key={"checkout-" + item.item.id}
+                    key={"checkout-" + "index-" + index + item.item.id}
                     className={`flex flex-row justify-between items-center ${index % 2 === 0 ? "bg-mutedGrey/10" : "bg-white"} p-4 rounded-lg`}
                   >
                     <View className="flex-1 flex flex-row space-x-2 items-center">
@@ -101,6 +101,7 @@ const CheckoutModal = () => {
                     <View className="flex-1/3 flex flex-row space-x-4 items-center">
                       <TrashIcon
                         color={"red"}
+                        className="p-4"
                         onPress={() => removeItem(item.item)}
                       />
                     </View>

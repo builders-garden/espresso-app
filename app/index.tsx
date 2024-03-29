@@ -39,12 +39,6 @@ const Home = () => {
           {isReady && isLogin && (
             <View className="flex flex-col space-y-4">
               <LoginForm />
-              {/*<Text
-                className="text-center font-semibold"
-                onPress={() => setIsLogin(false)}
-              >
-                Back
-          </Text>*/}
             </View>
           )}
         </KeyboardAvoidingView>

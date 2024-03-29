@@ -26,7 +26,7 @@ const CreateItemModal = () => {
         <View className="flex flex-col space-y-8">
           <View className="flex flex-row justify-between">
             <Text className="font-bold text-2xl">Create new item</Text>
-            <X color={"black"} onPress={() => router.back()} />
+            <X color={"black"} className="p-4" onPress={() => router.back()} />
           </View>
           <View className="flex flex-col space-y-4">
             <EmojiGrid

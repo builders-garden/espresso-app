@@ -17,10 +17,15 @@ export const getRequests = async (
   address: string
 ) => {
   const client = getRequestClient(provider);
+  console.log({
+    type: Types.Identity.TYPE.ETHEREUM_ADDRESS,
+    value: address,
+  });
   const requests = await client.fromIdentity({
     type: Types.Identity.TYPE.ETHEREUM_ADDRESS,
     value: address,
   });
+  console.log(JSON.stringify(requests));
   const unwrappedRequests = requests.map((request) => {
     return request.getData();
   });

@@ -64,3 +64,16 @@ export const removeCheckout = async (checkoutId: string) => {
   // remove checkout from shop
   return await deleteDoc(doc(firebaseFirestore, "checkouts", checkoutId));
 };
+
+export const getCheckouts = async (shopId: string) => {
+  const q = query(
+    collection(firebaseFirestore, "checkouts"),
+    where("shopId", "==", shopId)
+  );
+  const docs = await getDocs(q);
+  // get items from shop
+  const checkouts = docs.docs.map((doc) => {
+    return { ...doc.data(), id: doc.id } as unknown as Checkout;
+  });
+  return checkouts;
+};

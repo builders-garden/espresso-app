@@ -5,18 +5,26 @@ import { EditIcon, PlusIcon, TrashIcon } from "lucide-react-native";
 import AppButton from "../../../components/app-button";
 import { router } from "expo-router";
 import { useItemsStore } from "../../../store/items-store";
-import { removeItem } from "../../../lib/firestore";
+import { getItems, removeItem } from "../../../lib/firestore";
+import { useShopStore } from "../../../store/shop-store";
 
 const Items = () => {
+  const shop = useShopStore((state) => state.shop);
   const items = useItemsStore((state) => state.items);
   const setItems = useItemsStore((state) => state.setItems);
+
+  useEffect(() => {
+    if (!items) {
+      getItems(shop?.id!).then((items) => setItems(items));
+    }
+  }, []);
   return (
     <SafeAreaView>
       <View className="flex flex-col p-8 space-y-8">
         <View className="flex flex-row justify-between">
           <Text className="text-4xl font-bold">Items</Text>
           <AppButton
-            icon={<PlusIcon color={"white"} size={20} />}
+            icon={<PlusIcon color={"white"} size={24} />}
             text={"Add item"}
             onPress={() => router.push("/app/create-item-modal")}
           />
@@ -48,6 +56,7 @@ const Items = () => {
                 <View>
                   <TrashIcon
                     color={"red"}
+                    className="p-4"
                     onPress={() => {
                       removeItem(item.id);
                       setItems(items?.filter((i) => i?.id !== item?.id));
