@@ -23,7 +23,7 @@ const QRCodeModal = () => {
             {address ? (
               <QRCode
                 size={200}
-                value={`https://eca3-89-33-121-115.ngrok-free.app/checkouts/${checkoutId}`}
+                value={`https://espresso.builders.garden/checkouts/${checkoutId}`}
               />
             ) : (
               <View className="flex flex-col space-y-8">
