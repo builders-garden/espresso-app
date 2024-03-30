@@ -18,13 +18,13 @@ const EmojiGrid = ({
     <View className="flex flex-col">
       {rows.map((row, rowIndex) => (
         <View
-          key={rowIndex}
+          key={row.join("")}
           className="flex flex-row justify-around items-center"
         >
           {row.map((emoji, index) => (
             <Pressable onPress={() => setSelected(emoji)}>
               <View
-                key={index}
+                key={`${rowIndex}-${index}`}
                 className={`relative flex items-center justify-center ${emoji === selected ? "" : "opacity-30"}`}
               >
                 <Text className="text-6xl p-2">{emoji}</Text>

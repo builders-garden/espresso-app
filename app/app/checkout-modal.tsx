@@ -59,7 +59,7 @@ const CheckoutModal = () => {
                   onPress={() => {
                     addItem(item);
                   }}
-                  key={"itemp-" + index + "-" + item.name.toLocaleLowerCase()}
+                  key={"item-" + index + "-" + item.name.toLocaleLowerCase()}
                   className="flex-1 rounded-lg flex flex-col text-center justify-between p-4 space-y-2"
                 >
                   <View className="rounded-lg flex flex-col text-center justify-between p-4 space-y-2 border border-mutedGrey">
@@ -81,7 +81,12 @@ const CheckoutModal = () => {
               <View className="flex flex-col">
                 {checkOutItems.map((item, index) => (
                   <View
-                    key={"checkout-" + "index-" + index + item.item.id}
+                    key={
+                      "checkout-" +
+                      "index-" +
+                      index +
+                      item.item.name.toLowerCase()
+                    }
                     className={`flex flex-row justify-between items-center ${index % 2 === 0 ? "bg-mutedGrey/10" : "bg-white"} p-4 rounded-lg`}
                   >
                     <View className="flex-1 flex flex-row space-x-2 items-center">
